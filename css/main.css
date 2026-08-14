@@ -103,6 +103,10 @@ body.menu-open .navbar{transform:none;}
 .navbar .brand{font-family:var(--disp);font-variation-settings:'wdth' 140;font-weight:850;font-size:15px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
 .navbar .brand span{color:var(--leather-hi);display:inline-block;transition:transform .5s var(--ease);}
 .navbar .brand:hover span{transform:rotate(180deg);}
+/* the X + ring mark is the logo. Same glyph as the favicon and the app icons. */
+.brandmark{display:block;width:1em;height:1em;overflow:visible;}
+.navbar .brand .mk{margin-left:.3em;width:1.5em;height:1.5em;vertical-align:-.42em;}
+.navbar .brand .mk .brandmark{width:100%;height:100%;}
 .navbar .links{display:flex;align-items:center;gap:clamp(20px,2.4vw,34px);}
 .navbar .links a{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--chalk-dim);position:relative;padding-bottom:5px;transition:color .2s;}
 .navbar .links a::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:2px;background:var(--leather-hi);transform:scaleX(0);transform-origin:right;transition:transform .35s var(--ease);}
@@ -245,6 +249,36 @@ section{position:relative;}
    right gutter on smaller screens */
 .photo-sect.build .copy{max-width:460px;margin-left:min(calc(58.8% + 12px),calc(100% - 460px - clamp(20px,4vw,56px)));}
 
+/* homepage story preview: the UVA throw replaced a flat grey stadium exterior */
+.uva-bg{background-image:url('../img/uva-unc.jpg');background-position:44% 34%;}
+@media (max-width:900px){ .uva-bg{background-image:url('../img/uva-unc-1000.jpg');background-position:62% 36%;} }
+
+/* ---------- photography ---------- */
+/* one figure treatment sitewide: no frame, mono caption, nothing boxed */
+figure.shot,figure.band{margin:0;position:relative;}
+figure.shot img,figure.band img{width:100%;height:auto;display:block;}
+figure.shot figcaption,figure.band figcaption{margin-top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--chalk-dim);}
+.stone-sect figure.shot figcaption{color:#6B5D48;}
+figure.band{margin-top:clamp(28px,3.4vw,48px);}
+figure.band img{aspect-ratio:16/7;object-fit:cover;}
+@media (max-width:700px){ figure.band img{aspect-ratio:4/3;} }
+figure.shot img{aspect-ratio:4/5;object-fit:cover;}
+figure.shot.wide img{aspect-ratio:3/2;}
+
+/* THE RECORD: the big stat and the photo share the row */
+.statsplit{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(28px,4vw,64px);align-items:end;}
+@media (max-width:900px){ .statsplit{grid-template-columns:1fr;align-items:stretch;} .statsplit figure.shot img{aspect-ratio:3/2;} }
+
+/* book page: INSIDE THE BOOK */
+.insidegrid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(28px,4vw,64px);align-items:start;margin-top:26px;}
+@media (max-width:900px){ .insidegrid{grid-template-columns:1fr;} }
+
+/* dime lab: the quote panel carries the product shot instead of dead space */
+.quoteboard--split{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(28px,4vw,64px);align-items:center;}
+.quoteboard--split .qb-copy{position:relative;z-index:1;}
+.quoteboard--split figure.shot{position:relative;z-index:1;}
+@media (max-width:900px){ .quoteboard--split{grid-template-columns:1fr;} .quoteboard--split figure.shot img{aspect-ratio:3/2;} }
+
 /* play cards: separated by whitespace, not shared 1px rules */
 .playcards{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.6vw,22px);background:none;border:0;}
 .playcard{background:var(--ink-1);padding:32px;position:relative;transition:background .3s;display:block;}
@@ -351,6 +385,9 @@ section{position:relative;}
 .bigstat{font-family:var(--disp);font-variation-settings:'wdth' 126;font-weight:850;font-size:clamp(72px,13vw,200px);line-height:.9;text-transform:uppercase;}
 .bigstat .suf{color:var(--leather-hi);}
 .quoteboard{position:relative;background:var(--board);border:0;padding:clamp(48px,7vw,96px);overflow:hidden;}
+/* the X/O svg had no absolute rule here, so it sat IN FLOW and pushed the quote
+   down behind ~500px of empty panel. It is a background, not a grid item. */
+.quoteboard .bgplays{position:absolute;inset:0;width:100%;height:100%;opacity:.12;pointer-events:none;}
 .quoteboard .q{font-family:var(--disp);font-variation-settings:'wdth' 116;font-weight:800;text-transform:uppercase;font-size:clamp(24px,3.6vw,50px);line-height:1.1;max-width:820px;position:relative;}
 .quoteboard .q .lh{color:var(--leather-hi);}
 .quoteboard .who{margin-top:24px;position:relative;}
@@ -371,13 +408,11 @@ section{position:relative;}
 .lightbox .close:hover{background:var(--chalk);color:var(--ink-0);}
 
 /* ---------- book page ---------- */
+/* the drawn cover mock was replaced 08-14 with the real product photo. The
+   .bookcover .cover wrapper stays because main.js hangs the cursor-tilt on it. */
 .bookcover{perspective:900px;}
-.bookcover .cover{background:var(--ink-2);border:1px solid var(--line-strong);aspect-ratio:3/4;max-width:420px;margin:0 auto;display:flex;flex-direction:column;justify-content:space-between;padding:34px;transition:transform .3s ease-out;transform-style:preserve-3d;}
-/* the cover sits inside .stone-sect, which sets color:ink-0. On the dark cover
-   panel that made the title invisible, so it sets its own colour. */
-.bookcover .cover .tt{color:var(--chalk);font-family:var(--disp);font-variation-settings:'wdth' 118;font-weight:850;text-transform:uppercase;font-size:clamp(26px,3vw,38px);line-height:1;}
-.bookcover .cover .au{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--leather-hi);}
-.bookcover .cover svg{width:70%;margin:20px auto;}
+.bookcover .cover{background:var(--ink-2);border:0;aspect-ratio:3/4;max-width:420px;margin:0 auto;padding:0;overflow:hidden;transition:transform .3s ease-out;transform-style:preserve-3d;box-shadow:0 30px 70px rgba(23,22,19,.32);}
+.bookcover .cover img{width:100%;height:100%;object-fit:cover;display:block;}
 
 /* ---------- contact ---------- */
 .contact-board{min-height:calc(100svh - var(--nav-h));display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;background:var(--board);}
@@ -411,8 +446,12 @@ footer .bgplays{position:absolute;inset:0 0 0 auto;width:38%;opacity:.05;pointer
 .foot-grid li{margin-bottom:12px;}
 .foot-grid li a{color:var(--chalk);font-size:14px;transition:color .2s;}
 .foot-grid li a:hover{color:var(--leather-hi);}
-.wordmark{--rise:0%;transform:translateY(calc(16% + var(--rise)));font-family:var(--disp);font-variation-settings:'wdth' 128;font-weight:850;text-transform:uppercase;font-size:clamp(64px,12.5vw,196px);line-height:.82;letter-spacing:.005em;text-align:center;color:var(--chalk);user-select:none;position:relative;will-change:transform;}
+.wordmark{--rise:0%;transform:translateY(calc(16% + var(--rise)));font-family:var(--disp);font-variation-settings:'wdth' 128;font-weight:850;text-transform:uppercase;font-size:clamp(36px,12.2vw,196px);line-height:.82;letter-spacing:.005em;text-align:center;color:var(--chalk);user-select:none;position:relative;will-change:transform;
+  /* the mark is part of the lockup: never let it wrap to its own line */
+  white-space:nowrap;}
 .wordmark span{color:var(--leather-hi);}
+.wordmark .mk{display:inline-block;width:.74em;height:.74em;margin-left:.05em;vertical-align:-.015em;}
+.wordmark .mk .brandmark{width:100%;height:100%;}
 .foot-bottom{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:22px 0;border-top:1px solid var(--line);position:relative;}
 .foot-bottom .mono{color:var(--chalk-dim);}
 .foot-bottom a{color:var(--leather-hi);}
@@ -424,7 +463,7 @@ footer .bgplays{position:absolute;inset:0 0 0 auto;width:38%;opacity:.05;pointer
 .chan__banner .chan__live{position:absolute;top:16px;right:clamp(20px,3vw,34px);z-index:2;display:inline-flex;align-items:center;gap:8px;border:0;background:none;padding:0;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--chalk);text-shadow:0 1px 3px rgba(23,22,19,1),0 2px 18px rgba(23,22,19,.95),0 0 30px rgba(23,22,19,.8);}
 .chan__live i{width:6px;height:6px;background:var(--leather-hi);font-style:normal;}
 .chan__body{position:relative;z-index:2;display:flex;gap:clamp(16px,2.4vw,26px);align-items:flex-start;padding:0 clamp(20px,3vw,34px) clamp(6px,1vw,12px);margin-top:clamp(-42px,-5vw,-56px);}
-.chan__ava{flex:none;width:clamp(82px,9.6vw,128px);height:clamp(82px,9.6vw,128px);background-image:url('https://yt3.googleusercontent.com/yUu3UVB4YdYszamWTYjjBv4GbMyWDPzV3uShn3C3O27f_7UeAsjtiE6CfWFrXBEkvHq0N44Smg=s400-c-k-c0x00ffffff-no-rj'),url('../img/kb-avatar.jpg');background-size:cover;background-position:center;border:1px solid var(--line-strong);outline:4px solid var(--board);transition:transform .5s var(--ease);}
+.chan__ava{flex:none;width:clamp(82px,9.6vw,128px);height:clamp(82px,9.6vw,128px);background-image:url('../img/kb-avatar.jpg');background-size:cover;background-position:center;border:1px solid var(--line-strong);outline:4px solid var(--board);transition:transform .5s var(--ease);}
 .chan:hover .chan__ava{transform:translateY(-4px);}
 .chan__id{padding-top:clamp(44px,5.4vw,58px);min-width:0;}
 .chan__name{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-variation-settings:'wdth' 126;font-weight:850;text-transform:uppercase;font-size:clamp(22px,2.9vw,38px);line-height:1;}
