@@ -534,9 +534,11 @@ figure.shot.full img{aspect-ratio:auto;object-fit:contain;}
 .camcap{display:block;max-width:330px;margin:18px auto 0;text-align:center;font-size:10px;letter-spacing:.14em;line-height:1.9;color:#6B5D48;}
 
 /* ---------- contact ---------- */
-.contact-board{min-height:calc(100svh - var(--nav-h));display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;background:var(--board);}
+/* full screen. padding-top reserves the fixed nav so the copy still optically
+   centres in the space below it, and border-box keeps the total at exactly 100svh. */
+.contact-board{min-height:100svh;padding-top:var(--nav-h);display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;background:var(--board);}
 .contact-board .bgplays{position:absolute;inset:0;opacity:.12;pointer-events:none;}
-.contact-board .inner{position:relative;z-index:2;max-width:760px;padding:120px 24px;}
+.contact-board .inner{position:relative;z-index:2;max-width:760px;padding:clamp(40px,6vw,84px) 24px;}
 
 /* ---------- underdog: promo code, age note, fine print ---------- */
 /* three small systems, all functional. The code IS the product, the age note
@@ -599,7 +601,10 @@ figure.shot.full img{aspect-ratio:auto;object-fit:contain;}
 /* ---------- footer ---------- */
 /* two layers: .foot scrolls over the top of .foot-mark, which is pinned behind it,
    so the BENKERT wordmark is uncovered as you reach the bottom. */
-footer.foot{padding-top:clamp(80px,10vw,140px);border-top:1px solid var(--line);background:linear-gradient(180deg,var(--ink-0),#211E18 140%);overflow:hidden;position:relative;z-index:1;}
+/* ⚠️ NOT overflow:hidden. The link rail is the footer's first child and is
+   pulled up past its top edge; hidden would slice it off at the seam. The clip
+   only ever existed for the .bgplays doodle, which now clips itself. */
+footer.foot{padding-top:clamp(80px,10vw,140px);border-top:1px solid var(--line);background:linear-gradient(180deg,var(--ink-0),#211E18 140%);position:relative;z-index:1;}
 main,footer.foot{position:relative;}
 main{z-index:1;background:var(--ink-0);}
 .foot-mark{position:relative;z-index:0;background:var(--ink-0);overflow:hidden;}
@@ -610,7 +615,7 @@ main{z-index:1;background:var(--ink-0);}
 }
 /* the X/O doodle sits in the right third at low opacity so it stops running
    through the link columns */
-footer .bgplays{position:absolute;inset:0 0 0 auto;width:38%;opacity:.05;pointer-events:none;}
+footer .bgplays{position:absolute;inset:0 0 0 auto;width:38%;opacity:.05;pointer-events:none;clip-path:inset(0);}
 .foot-grid{position:relative;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding:64px 0 52px;}
 /* the pitch block lives on the homepage only. Every other page runs the slim
    footer: link columns, legal bar, wordmark. */
@@ -724,4 +729,322 @@ footer .bgplays{position:absolute;inset:0 0 0 auto;width:38%;opacity:.05;pointer
   .photo-sect.build .copy{padding-top:calc(90vw + 10px);}
   .photo-sect.build .inner{padding:0 clamp(20px,4vw,56px);}
   .photo-sect.build .copy{margin-left:0;}
+}
+
+
+/* ============================================================
+   MORE NUTRITION  ·  partner page
+   Dark shell (nav + footer) stays. Between them the page runs
+   More's own bright pink + sky. Everything is scoped to .mn-*
+   or to body.mn so not one rule leaks onto the other 8 pages.
+   ============================================================ */
+:root{
+  --mn-pink:#F5359A;        /* pack pink, accents on dark only    */
+  --mn-pink-deep:#C4126F;   /* 5.6:1 on cream, safe for body copy */
+  --mn-flood:#D4127F;       /* 5.1:1 under white, safe as a bed   */
+  --mn-sky:#8FD4E8;         /* shoe / sky blue, accents on dark   */
+  --mn-sky-deep:#12557E;    /* 7.4:1 on cream                     */
+  --mn-cream:#FFF6FA;
+  --mn-ink:#191714;
+}
+
+/* ---------- hero: a white stage. Centred photo, copy revealed on scroll ----------
+   --p (0 -> 1) comes from js/more.js off the hero track's own progress, exactly
+   like the grow section. Registered with @property so it is a real number in
+   calc() instead of a raw token. ---------------------------------------------- */
+@property --p{syntax:"<number>";inherits:true;initial-value:0;}
+
+.mn-hero.mn-light{background:#FFFBFD;}
+.mn-hero__track{height:280vh;position:relative;}
+/* --z is act one (scroll INTO the picture), --p keeps running for act two
+   (scroll THROUGH the words). Everything below reads off one or the other. */
+.mn-hero__stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;
+  --z:clamp(0,calc(var(--p) / .3),1);}
+/* the frame opens from a small centred card to a near-full plate, keeping a
+   white margin so the page still reads white. The picture inside counter-scales
+   so you are moving in, not just watching a box get bigger. */
+.mn-hero__frame{position:absolute;left:50%;top:50%;margin:0;overflow:hidden;
+  /* opens 9:16 (a phone frame) and widens to a landscape plate.
+     The start width is expressed in svh so the ratio holds at any viewport;
+     calc() happily adds an svh term to a % term. */
+  width:calc(34.9svh * (1 - var(--z)) + 86% * var(--z));
+  height:calc(62svh * (1 - var(--z)) + 88svh * var(--z));
+  transform:translate(-50%,-50%);will-change:width,height;}
+.mn-hero__shot{width:100%;height:100%;object-fit:cover;object-position:52% 34%;
+  transform:scale(calc(1.1 - .1 * var(--z)));transform-origin:center;}
+/* NO white veil. Ryder: "dont make it white hazy." Ink on this sky measures
+   7.6:1 unaided. The only help the copy gets is a low, warm floor gradient that
+   also carries the brand colour, and the copy sits high enough to stay on sky. */
+.mn-hero__veil{position:absolute;inset:0;pointer-events:none;opacity:var(--z);
+  background:linear-gradient(0deg,
+    rgba(255,251,253,.7) 0%,rgba(255,251,253,.46) 12%,rgba(255,251,253,.2) 26%,transparent 42%);}
+/* a touch of More pink on the floor so the white is not sterile */
+.mn-hero__stage::after{content:"";position:absolute;left:0;right:0;bottom:0;height:26%;
+  pointer-events:none;z-index:1;
+  background:linear-gradient(0deg,rgba(245,53,154,.16) 0%,rgba(245,53,154,.05) 46%,transparent 100%);}
+/* the eyebrow is pinned to the top, out of the growing plate's way, so the
+   stage is never a blank white screen at rest */
+.mn-hero__kick{position:absolute;left:0;right:0;z-index:3;text-align:center;margin:0;
+  top:calc(var(--nav-h) - clamp(14px,2vw,30px));}
+.mn-hero .wrap{position:relative;z-index:2;text-align:center;}
+.mn-hero__copy{max-width:900px;margin:0 auto;transform:translateY(calc(-7svh * var(--z)));}
+.mn-hero .kicker{color:var(--mn-pink-deep);}
+/* ink on a light stage: no glow, no outline */
+.mn-hero .hero-h{color:var(--mn-ink);text-shadow:none;}
+.mn-hero .hero-h .stroke{-webkit-text-stroke:0;color:var(--mn-ink);}
+.mn-hero .lede{color:#463F3A;margin-left:auto;margin-right:auto;}
+.mn-hero .chip-row{justify-content:center;}
+.mn-hero .btn-pair{justify-content:center;}
+
+/* scroll-linked reveal. --a = when it starts, --w = how long it takes. */
+/* ⚠️ main.js auto-tags .kicker and .lede with [data-rv], and `[data-rv].in`
+   is (0,2,0) which beats a bare `.mn-rv`. The stage owns its own reveal, so
+   these are written at matching specificity AND more.js strips the attribute. */
+.mn-hero .mn-rv,.mn-hero .mn-rv.in{--a:0;--w:.16;
+  --t:clamp(0,calc((var(--p) - var(--a)) / var(--w)),1);
+  opacity:var(--t);
+  transform:translateY(calc((1 - var(--t)) * 34px));transition:none;}
+/* ⚠️ only the headline lines want display:block. Forcing it on .chip-row kills
+   its flex layout and the mobile stack collapses into one unreadable run. */
+.mn-hero .hero-h .mn-rv{display:block;}
+.mn-hero .mn-rv-out,.mn-hero .mn-rv-out.in{--a:.02;--w:.1;transition:none;
+  opacity:calc(1 - clamp(0,calc((var(--p) - var(--a)) / var(--w)),1));}
+
+.mn-scrollcue{position:absolute;left:50%;bottom:clamp(16px,2.2vw,26px);transform:translateX(-50%);
+  z-index:3;font-family:var(--mono);font-size:9px;letter-spacing:.28em;text-transform:uppercase;
+  color:#7A7369;display:flex;flex-direction:column;align-items:center;gap:9px;}
+.mn-scrollcue i{display:block;width:1px;height:34px;background:linear-gradient(180deg,rgba(25,23,20,.5),transparent);
+  animation:mnCue 2.2s var(--ease) infinite;transform-origin:top;}
+@keyframes mnCue{0%{transform:scaleY(0);opacity:0}30%{opacity:1}100%{transform:scaleY(1);opacity:0}}
+
+/* THE NAV. The page now opens straight onto the pink grow section, and
+   chalk-dim links measure 1.97:1 on #D4127F. main.js adds .scrolled past 80px
+   and the bar becomes its own dark pill, which is right everywhere else, so
+   only the un-scrolled state is touched: near-white type (4.5:1 on the flood)
+   over a slightly deepened pink. Excluded while the dark mobile menu is open. */
+body.mn:not(.menu-open) .navbar:not(.scrolled){
+  background:linear-gradient(180deg,rgba(120,10,74,.6),rgba(120,10,74,0));
+  border-bottom-color:rgba(255,255,255,.16);}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .brand{color:#fff;}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .brandmark path{stroke:#fff;}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .brandmark circle{stroke:#FFD9EC;}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .links a{color:rgba(255,255,255,.86);}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .links a:hover,
+body.mn:not(.menu-open) .navbar:not(.scrolled) .links a.on{color:#fff;}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .links a::after{background:#fff;}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .cta{color:#fff;border-left-color:rgba(255,255,255,.24);}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .cta::before{background:#fff;}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .cta:hover{color:var(--mn-flood);}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .nav-burger{color:#fff;border-left-color:rgba(255,255,255,.24);}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .nav-burger .bl{background:#fff;}
+body.mn:not(.menu-open) .navbar:not(.scrolled) .nav-burger .bt{color:rgba(255,255,255,.8);}
+
+@media (prefers-reduced-motion: reduce){
+  .mn-hero__track{height:auto;}
+  .mn-hero__stage{position:static;height:auto;padding:calc(var(--nav-h) + 40px) 0 clamp(56px,7vw,96px);}
+  .mn-hero__shot{position:relative;left:auto;top:auto;transform:none;width:100%;height:auto;
+    aspect-ratio:4/3;margin-bottom:clamp(24px,3vw,40px);}
+  .mn-hero__veil{display:none;}
+  .mn-hero .mn-rv,.mn-hero .mn-rv.in{opacity:1;transform:none;}
+  .mn-scrollcue{display:none;}
+}
+
+/* ---------- the grow: a framed shot that scales to full screen ----------
+   Driven by --p (0 → 1) which js/more.js writes from the track's own
+   scroll progress. No ScrollTrigger pin, so nothing below it re-measures,
+   and no GSAP timeline for Lenis to fight. Pure sticky + one CSS var. */
+.mn-grow{background:var(--mn-flood);}
+.mn-grow__track{height:230vh;position:relative;}
+.mn-grow__stick{position:sticky;top:0;height:100svh;display:grid;place-items:center;overflow:hidden;}
+/* it is the first thing on the page now, so hold the top dark enough for the nav */
+.mn-grow__stick::before{content:"";position:absolute;left:0;right:0;top:0;height:clamp(120px,20vh,200px);
+  z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(120,10,74,.55),rgba(120,10,74,0));}
+.mn-grow__frame{--p:0;margin:0;position:relative;overflow:hidden;
+  width:calc(42% + 58% * var(--p));
+  height:calc(44svh + 56svh * var(--p));
+  will-change:width,height;}
+.mn-grow__frame img{width:100%;height:100%;object-fit:cover;object-position:center 56%;
+  transform:scale(calc(1.14 - .14 * var(--p)));transform-origin:center;}
+.mn-grow__cap{position:absolute;left:0;right:0;bottom:clamp(18px,2.6vw,34px);z-index:2;
+  text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:#fff;opacity:var(--p);pointer-events:none;
+  text-shadow:0 1px 18px rgba(0,0,0,.6);}
+@media (prefers-reduced-motion: reduce){
+  .mn-grow__track{height:auto;}
+  .mn-grow__stick{position:static;height:auto;padding:clamp(40px,6vw,80px) 0;}
+  .mn-grow__frame{width:100%;height:auto;aspect-ratio:16/9;}
+  .mn-grow__cap{opacity:1;}
+}
+
+/* ---------- the flood: More's pink, white type ---------- */
+.mn-flood{background:var(--mn-flood);color:#fff;}
+.mn-flood .kicker{color:#FFD9EC;}
+.mn-flood .h2{color:#fff;}
+.mn-flood .lede,.mn-flood p{color:rgba(255,255,255,.9);}
+.mn-flood .statstrip{border-color:rgba(255,255,255,.34);}
+.mn-flood .statstrip .v{color:#fff;}
+.mn-flood .statstrip .v .suf{color:#FFD9EC;}
+.mn-flood .statstrip .k{color:rgba(255,255,255,.78);}
+
+/* ---------- light section ---------- */
+.mn-light{background:var(--mn-cream);color:var(--mn-ink);}
+.mn-light .kicker{color:var(--mn-pink-deep);}
+.mn-light .h2{color:var(--mn-ink);}
+.mn-light .h2 .lh{color:var(--mn-pink-deep);}
+.mn-light .lede,.mn-light p{color:#4A4640;}
+.mn-light .grid2{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(28px,4vw,64px);align-items:center;}
+.mn-light figure.shot figcaption{color:#7A7369;}
+.mn-light .btn{border-color:var(--mn-ink);color:var(--mn-ink);}
+.mn-light .btn::before{background:var(--mn-ink);}
+.mn-light .btn:hover{color:var(--mn-cream);}
+.mn-light .btn.solid{background:var(--mn-flood);border-color:var(--mn-flood);color:#fff;}
+.mn-light .btn.solid::before{background:var(--mn-ink);}
+.mn-light .btn.solid:hover{border-color:var(--mn-ink);color:#fff;}
+.mn-light .chip{color:#6C665D;}
+.mn-light .chip b{color:var(--mn-ink);}
+.mn-light .chip-row .chip:not(:last-child)::after{background:var(--mn-pink-deep);}
+.mn-light .textlink{color:var(--mn-pink-deep);border-color:var(--mn-pink-deep);}
+.mn-light .textlink:hover{color:var(--mn-ink);border-color:var(--mn-ink);}
+.mn-light .pullquote{margin-top:clamp(24px,3vw,34px);padding-left:clamp(16px,1.6vw,22px);
+  border-left:3px solid var(--mn-pink-deep);font-family:var(--disp);font-variation-settings:'wdth' 112;
+  font-weight:700;text-transform:uppercase;font-size:clamp(17px,1.6vw,22px);line-height:1.22;color:var(--mn-ink);}
+
+/* ---------- flavours: the swatch list ---------- */
+.mn-flavours{margin-top:clamp(30px,4vw,48px);display:grid;gap:0;max-width:940px;}
+.mn-fl{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:clamp(14px,2vw,26px);
+  padding:clamp(16px,1.8vw,22px) 0;border-top:1px solid rgba(25,23,20,.14);}
+.mn-fl:last-child{border-bottom:1px solid rgba(25,23,20,.14);}
+.mn-fl .sw{width:clamp(34px,3.4vw,46px);height:clamp(34px,3.4vw,46px);flex:none;}
+.mn-fl .nm{font-family:var(--disp);font-variation-settings:'wdth' 116;font-weight:800;text-transform:uppercase;
+  font-size:clamp(16px,1.9vw,26px);line-height:1.05;letter-spacing:.01em;}
+.mn-fl .no{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--mn-pink-deep);}
+.mn-flnote{margin-top:18px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:#7A7369;line-height:1.9;}
+
+/* ---------- the loose three-up. No heading, no section, no captions:
+   three frames dropped onto the page between two blocks of copy. ---------- */
+.mn-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(10px,1.2vw,20px);
+  padding:clamp(10px,1.6vw,26px) 0 clamp(40px,5vw,84px);}
+/* slide in staggered when the row enters, then lift under the cursor.
+   more.js adds .in; --i is the card's index and drives the stagger. */
+.mn-strip figure{margin:0;overflow:hidden;position:relative;
+  opacity:0;transform:translateY(40px) scale(.985);
+  /* a long ease-out-quint settle rather than the site's snappier expo curve */
+  transition:opacity 1.1s cubic-bezier(.22,1,.36,1),
+             transform 1.25s cubic-bezier(.22,1,.36,1),
+             box-shadow .45s var(--ease);
+  transition-delay:calc(var(--i,0) * .15s);}
+.mn-strip figure.in{opacity:1;transform:none;}
+.mn-strip img{width:100%;aspect-ratio:4/5;object-fit:cover;
+  transition:transform .7s var(--ease);}
+@media (hover:hover){
+  /* the figures are not links, so a small lift cannot steal a tap target */
+  .mn-strip figure:hover{transform:translateY(-10px);
+    box-shadow:0 30px 60px -30px rgba(25,23,20,.42);}
+  .mn-strip figure:hover img{transform:scale(1.06);}
+}
+@media (prefers-reduced-motion: reduce){
+  .mn-strip figure{opacity:1;transform:none;transition:none;}
+  .mn-strip figure:hover img{transform:none;}
+}
+
+/* ---------- closer ---------- */
+.mn-closer{position:relative;overflow:hidden;
+  background:linear-gradient(196deg,#D4127F 0%,#9E1064 38%,#103A5A 76%,#171613 100%);}
+.mn-closer .closer__in .h2{color:#fff;}
+.mn-closer .closer__in .lede{color:rgba(255,246,250,.85);}
+.mn-closer .kicker{color:var(--mn-sky);}
+.mn-closer .btn.solid{background:#fff;border-color:#fff;color:var(--mn-flood);}
+.mn-closer .btn.solid::before{background:var(--mn-sky);}
+.mn-closer .btn.solid:hover{border-color:var(--mn-sky);color:var(--mn-ink);}
+.mn-disclose{margin:clamp(30px,3.6vw,44px) auto 0;max-width:640px;text-align:center;
+  font-family:var(--mono);font-size:10px;letter-spacing:.13em;line-height:2;
+  text-transform:uppercase;color:rgba(255,246,250,.74);}
+.mn-disclose a{color:#fff;border-bottom:1px solid rgba(255,255,255,.4);}
+.mn-disclose a:hover{border-color:#fff;}
+
+@media (max-width:900px){
+  .mn-hero__track{height:250vh;}
+  .mn-hero__frame{width:calc(31.5svh * (1 - var(--z)) + 104% * var(--z));
+    height:calc(56svh * (1 - var(--z)) + 88svh * var(--z));}
+  .mn-hero__shot{object-position:48% 34%;}
+  .mn-hero__veil{background:linear-gradient(180deg,
+    rgba(255,251,253,.2) 0%,rgba(255,251,253,.76) 12%,rgba(255,251,253,.88) 30%,
+    rgba(255,251,253,.88) 70%,rgba(255,251,253,.6) 88%,rgba(255,251,253,.1) 100%);}
+  .mn-grow__track{height:190vh;}
+  .mn-grow__frame{width:calc(78% + 22% * var(--p));height:calc(34svh + 66svh * var(--p));}
+  .mn-light .grid2{grid-template-columns:1fr;}
+  .mn-strip{grid-template-columns:1fr;gap:16px;}
+  .mn-strip img{aspect-ratio:3/2;}
+  .mn-fl{grid-template-columns:auto 1fr;grid-template-areas:"sw nm" ". no";row-gap:6px;}
+  .mn-fl .sw{grid-area:sw;}.mn-fl .nm{grid-area:nm;}.mn-fl .no{grid-area:no;}
+}
+@media (max-width:640px){
+  /* the base rule left-aligns a stacked chip run; this hero is centred */
+  .mn-hero .chip-row{align-items:center;}
+}
+
+
+/* ============================================================
+   LINK RAIL  ·  homepage only
+   Five destination cards OVERLAPPING the footer. Ryder: "i want the
+   cards to overlap the footer, not sit on the line."
+   The rail is the footer's FIRST CHILD, pulled up by a negative
+   margin-top so its top slice sticks into the stone section above.
+   Living inside the footer means it can never lose a z-index race
+   with it, which is what a sibling in <main> was doing.
+   ⚠️ footer.foot must not be overflow:hidden or this gets sliced.
+   ============================================================ */
+:root{
+  --rail-lift:clamp(66px,8.4vw,124px);   /* how far the cards poke up  */
+  --rail-under:clamp(62px,8vw,112px);    /* air under them in the foot */
+}
+/* ⚠️ the footer's own padding-top would eat the negative margin, so it is
+   zeroed and the air under the cards comes from the rail's margin-bottom. */
+footer.foot:not(.foot--slim){padding-top:0;}
+.linkrail-hold{position:relative;z-index:3;
+  margin-top:calc(-1 * var(--rail-lift));
+  margin-bottom:var(--rail-under);}
+/* the section above reserves the room the cards poke into */
+.rail-above{padding-bottom:calc(clamp(72px,9vw,140px) + var(--rail-lift) + clamp(20px,2.6vw,40px));}
+.linkrail{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(8px,1vw,16px);}
+
+.lcard{position:relative;display:block;overflow:hidden;aspect-ratio:4/5;background:var(--ink-1);
+  box-shadow:0 26px 54px -26px rgba(0,0,0,.7);
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease);}
+.lcard img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .8s var(--ease);}
+.lcard::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(0deg,rgba(23,22,19,.9) 0%,rgba(23,22,19,.4) 38%,rgba(23,22,19,0) 74%);}
+.lc-in{position:absolute;left:0;right:0;bottom:0;z-index:2;display:block;
+  padding:clamp(12px,1.3vw,18px);}
+.lc-k{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--leather-hi);margin-bottom:6px;}
+.lc-t{display:block;font-family:var(--disp);font-variation-settings:'wdth' 116;font-weight:800;
+  text-transform:uppercase;font-size:clamp(13px,1.1vw,17px);line-height:1.08;color:var(--chalk);}
+@media (hover:hover){
+  /* transform only, so the tap target never changes size or moves sideways */
+  .lcard:hover{transform:translateY(-9px);box-shadow:0 38px 70px -26px rgba(0,0,0,.8);}
+  .lcard:hover img{transform:scale(1.07);}
+  .lcard:hover .lc-k{color:var(--chalk);}
+}
+@media (max-width:1023px){
+  /* stay one row: a 3-col wrap puts the rail on two lines and the overlap
+     stops reading as a single band crossing the seam */
+  .linkrail{gap:8px;}
+  .lc-t{font-size:14px;}
+  .lc-k{font-size:8px;letter-spacing:.16em;}
+}
+@media (max-width:760px){
+  :root{--rail-lift:clamp(56px,15vw,90px);--rail-under:clamp(52px,12vw,84px);}
+  .linkrail{grid-template-columns:repeat(2,1fr);gap:9px;}
+  .lcard{aspect-ratio:4/5;}
+  .lcard:nth-child(5){grid-column:1 / -1;aspect-ratio:16/9;}
+  .lc-t{font-size:16px;}
+}
+@media (prefers-reduced-motion: reduce){
+  .lcard,.lcard img{transition:none;}
+  .lcard:hover{transform:none;}
+  .lcard:hover img{transform:none;}
 }
