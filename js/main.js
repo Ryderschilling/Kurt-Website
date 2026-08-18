@@ -364,3 +364,17 @@
     });
   }
 })();
+
+/* play-card rail: hide the right-edge fade once you reach the last card */
+(function () {
+  var rail = document.querySelector('.playcards');
+  var lift = document.querySelector('.playcards-lift');
+  if (!rail || !lift) return;
+  function sync() {
+    var atEnd = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 8;
+    lift.classList.toggle('rail-end', atEnd);
+  }
+  rail.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', sync);
+  sync();
+})();
