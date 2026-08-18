@@ -312,7 +312,7 @@
       var ticking = false;
       function markTick() {
         ticking = false;
-        if (window.innerWidth < 1024 || !markH) { wordmark.style.setProperty('--rise', '0%'); return; }
+        if (!markH) { wordmark.style.setProperty('--rise', '0%'); return; }
         var docH = document.documentElement.scrollHeight;
         var exposed = window.scrollY + window.innerHeight - (docH - markH);
         var p = Math.min(Math.max(exposed / markH, 0), 1);

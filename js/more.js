@@ -83,3 +83,16 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
   measure();
 })();
+
+/* shoot-strip rail: drop the right-edge fade once you reach the last frame */
+(function () {
+  var rail = document.querySelector('.mn-strip');
+  var hold = document.querySelector('.mn-strip-hold');
+  if (!rail || !hold) return;
+  function sync() {
+    hold.classList.toggle('rail-end', rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 8);
+  }
+  rail.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', sync);
+  sync();
+})();

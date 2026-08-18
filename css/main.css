@@ -611,10 +611,9 @@ main,footer.foot{position:relative;}
 main{z-index:1;background:var(--ink-0);}
 .foot-mark{position:relative;z-index:0;background:var(--ink-0);overflow:hidden;}
 .foot-mark-space{display:none;}
-@media (min-width:1024px){
-  .foot-mark{position:fixed;left:0;right:0;bottom:0;}
-  .foot-mark-space{display:block;height:var(--markH,340px);}
-}
+/* the pinned-reveal runs on every size now, mobile included */
+.foot-mark{position:fixed;left:0;right:0;bottom:0;}
+.foot-mark-space{display:block;height:var(--markH,340px);}
 /* the X/O doodle sits in the right third at low opacity so it stops running
    through the link columns */
 footer .bgplays{position:absolute;inset:0 0 0 auto;width:38%;opacity:.05;pointer-events:none;clip-path:inset(0);}
@@ -713,6 +712,10 @@ footer .bgplays{position:absolute;inset:0 0 0 auto;width:38%;opacity:.05;pointer
   .foot-grid,.foot--slim .foot-grid{grid-template-columns:1fr 1fr;padding:48px 0 40px;gap:28px;}
   /* the pitch block gets its own full-width row instead of an 8-line column */
   .foot-grid > div:first-child:has(.pitch){grid-column:1 / -1;margin-bottom:8px;}
+  /* mobile: Site keeps the left column, Follow + Work With Kurt stack on the right */
+  .foot-grid > div:nth-child(2){grid-column:1;grid-row:2 / span 2;}
+  .foot-grid > div:nth-child(3){grid-column:2;grid-row:2;}
+  .foot-grid > div:nth-child(4){grid-column:2;grid-row:3;align-self:start;}
   .foot-grid .pitch{max-width:none;font-size:19px;}
   .foot-grid .pitch + .btn-pair{width:auto;}
   footer .bgplays{width:70%;}
@@ -722,8 +725,10 @@ footer .bgplays{position:absolute;inset:0 0 0 auto;width:38%;opacity:.05;pointer
   .btn-pair .btn + .btn{margin-left:0;margin-top:-1px;}
   .btn-pair .btn{text-align:center;}
   .hero .scrim{background:linear-gradient(0deg,rgba(23,22,19,.96) 22%,rgba(23,22,19,.45) 60%,rgba(23,22,19,.25) 100%);}
-  .hero.home .bg{background-image:url('../img/hero-armynavy-900.jpg');background-position:50% 62%;}
-  .hero.home .scrim{background:linear-gradient(0deg,rgba(23,22,19,.92) 14%,rgba(23,22,19,.35) 46%,transparent 62%),linear-gradient(180deg,rgba(23,22,19,.94) 0%,rgba(23,22,19,.66) 34%,transparent 56%);}
+  /* push the photo layer down so the headline clears Kurt's face, fade its top edge into the ink */
+  .hero.home .bg{background-image:url('../img/hero-armynavy-900.jpg');background-position:50% 100%;filter:saturate(1.08) contrast(1.1) brightness(1.06);top:17%;bottom:-6%;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 13%);mask-image:linear-gradient(180deg,transparent 0,#000 13%);}
+  .hero.home .grain{opacity:.18;}
+  .hero.home .scrim{background:linear-gradient(0deg,rgba(23,22,19,.88) 10%,rgba(23,22,19,.2) 40%,transparent 54%),linear-gradient(180deg,rgba(23,22,19,.86) 0%,rgba(23,22,19,.4) 26%,transparent 46%);}
   /* mobile: copy sits above Kurt, buttons stay pinned low */
   .hero.home{align-items:stretch;}
   .hero.home .inner{display:flex;flex-direction:column;height:100%;text-align:center;}
@@ -733,7 +738,7 @@ footer .bgplays{position:absolute;inset:0 0 0 auto;width:38%;opacity:.05;pointer
   .hero.home .hero-h .hl-mob{display:block;}
   .hero.home .sub{margin-top:auto;margin-left:auto;margin-right:auto;text-align:center;}
   .hero.home .btn-pair{margin-top:0;}
-  .photo-sect.left .scrim,.photo-sect.right .scrim{background:linear-gradient(0deg,rgba(23,22,19,.96) 32%,rgba(23,22,19,.72) 62%,rgba(23,22,19,.4) 100%),rgba(23,22,19,.24);}
+  .photo-sect.left .scrim,.photo-sect.right .scrim{background:linear-gradient(0deg,rgba(23,22,19,.9) 24%,rgba(23,22,19,.52) 58%,rgba(23,22,19,.22) 100%),rgba(23,22,19,.14);}
   .photo-sect .copy,.photo-sect.right .copy{margin:0;padding:56vh 0 64px;}
   #story-preview .copy{padding-bottom:110px;}
   .playcards-lift{margin-top:-56px;}
@@ -993,8 +998,15 @@ body.mn:not(.menu-open) .navbar:not(.scrolled) .nav-burger .bt{color:rgba(255,25
   .mn-grow__track{height:190vh;}
   .mn-grow__frame{width:calc(78% + 22% * var(--p));height:calc(34svh + 66svh * var(--p));}
   .mn-light .grid2{grid-template-columns:1fr;}
-  .mn-strip{grid-template-columns:1fr;gap:16px;}
-  .mn-strip img{aspect-ratio:3/2;}
+  /* mobile: the three shoot frames become a swipeable rail */
+  .mn-strip{position:relative;display:flex;grid-template-columns:none;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;margin-inline:calc(clamp(20px,4vw,56px) * -1);padding:clamp(10px,1.6vw,26px) clamp(20px,4vw,56px) clamp(40px,5vw,84px);}
+  .mn-strip::-webkit-scrollbar{display:none;}
+  .mn-strip figure{flex:0 0 80%;scroll-snap-align:start;}
+  .mn-strip{scroll-padding-left:clamp(20px,4vw,56px);}
+  .mn-strip img{aspect-ratio:4/5;}
+  .mn-strip-hold{position:relative;}
+  .mn-strip-hold::after{content:"";position:absolute;top:0;right:0;bottom:clamp(40px,5vw,84px);width:54px;background:linear-gradient(90deg,rgba(255,246,250,0),rgba(255,246,250,.9) 76%,var(--mn-cream));pointer-events:none;z-index:3;transition:opacity .3s var(--ease);}
+  .mn-strip-hold.rail-end::after{opacity:0;}
   .mn-fl{grid-template-columns:auto 1fr;grid-template-areas:"sw nm" ". no";row-gap:6px;}
   .mn-fl .sw{grid-area:sw;}.mn-fl .nm{grid-area:nm;}.mn-fl .no{grid-area:no;}
 }
